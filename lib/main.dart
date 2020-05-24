@@ -1,6 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:nfc_manager/platform_tags.dart';
+import 'package:umoney_flutter/tlv/tlv_util.dart';
 import 'package:umoney_flutter/widgets/busCard.dart';
 import 'package:flutter/services.dart';
+import 'package:nfc_manager/nfc_manager.dart';
+import 'package:convert/convert.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,17 +63,86 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  final String _defaultBalance = "₮ ----";
+  final String _defaultCardNumber = "**** **** **** ****";
 
-  void _incrementCounter() {
+  String _balance;
+  String _cardNumber;
+
+  void _resetCard() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _balance = _defaultBalance;
+      _cardNumber = _defaultCardNumber;
     });
+  }
+
+  void _changeCard(String balance, String cardNumber) {
+    setState(() {
+      _balance = balance;
+      _cardNumber = cardNumber;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _balance = _defaultBalance;
+    _cardNumber = _defaultCardNumber;
+
+    NfcManager.instance.isAvailable().then((value) {
+      print('Availalble');
+      print(value);
+    });
+
+    NfcManager.instance.startTagSession(
+      pollingOptions: Set.from([
+        TagPollingOption.iso14443,
+      ]),
+      onDiscovered: (NfcTag tag) async {
+        _resetCard();
+
+        // Manipulating tag
+        IsoDep isoDep = IsoDep.fromTag(tag);
+
+        var aid = 'd4100000030001';
+        var aidBytes = hex.decode(aid);
+        var selectFileCommand = Uint8List.fromList([
+          0x00,
+          0xa4,
+          0x04,
+          0x00,
+          aidBytes.length,
+          ...aidBytes,
+          0x00,
+        ]);
+
+        Uint8List fci = await isoDep.transceive(selectFileCommand);
+        var purseInfo = TlvUtil().findBERTLVString(fci, 'b0', false);
+        var cardNumber = "";
+
+        if (purseInfo != null) {
+          cardNumber = TlvUtil().getHexString(purseInfo, 4, 8);
+          cardNumber = cardNumber.replaceAllMapped(RegExp(r".{4}"), (match) => "${match.group(0)} ");
+        }
+
+        var balanceCommand = Uint8List.fromList([
+          0x90,
+          0x4c,
+          0x00,
+          0x00,
+          0x04,
+        ]);
+        Uint8List balanceRecv = await isoDep.transceive(balanceCommand);
+        // balanceRecv[balanceRecv.length - 2] = "status"
+        // 0x90 = "STATUS_OK"
+        var balanceReal = balanceRecv.take(balanceRecv.length - 2).toList();
+        var balance = int.parse(hex.encode(balanceReal), radix: 16);
+        var balanceFormatted = NumberFormat.simpleCurrency(locale: 'mn', decimalDigits: 1).format(balance);
+
+        _changeCard(balanceFormatted, cardNumber);
+      },
+    );
   }
 
   @override
@@ -104,15 +180,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 Center(
                   child: BusCard(
                     width: MediaQuery.of(context).size.width - 60,
+                    balance: _balance,
+                    cardNumber: _cardNumber,
                   ),
                 ),
                 SizedBox(height: 80),
                 Text(
                   'You have pushed the button this many times:',
-                ),
-                Text(
-                  '$_counter',
-                  style: Theme.of(context).textTheme.headline4,
                 ),
               ],
             ),

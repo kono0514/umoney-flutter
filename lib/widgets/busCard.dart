@@ -1,31 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class BusCard extends StatefulWidget {
-  const BusCard({Key key, this.width}) : super(key: key);
+class BusCard extends StatelessWidget {
+  const BusCard({Key key, this.width, this.balance, this.cardNumber}) : super(key: key);
 
   final double width;
-
-  @override
-  _BusCardState createState() => _BusCardState();
-}
-
-class _BusCardState extends State<BusCard> {
-  String balance = "----";
-  String cardNumber = "**** **** **** ****";
-
-  void _resetDefault() {
-    setState(() {
-      balance = "----";
-      cardNumber = "**** **** **** ****";
-    });
-  }
+  final String balance;
+  final String cardNumber;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: widget.width,
-      height: (widget.width * 0.628).roundToDouble(),
+      width: width,
+      height: (width * 0.628).roundToDouble(),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: <Color>[
@@ -62,7 +49,7 @@ class _BusCardState extends State<BusCard> {
             left: 20,
             top: 50,
             child: Text(
-              '₮ $balance',
+              '$balance',
               style: GoogleFonts.montserrat(
                 textStyle: TextStyle(
                   color: Colors.white,
@@ -82,7 +69,7 @@ class _BusCardState extends State<BusCard> {
                   color: const Color(0xffF4F4F4), 
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  letterSpacing: 3.0,
+                  letterSpacing: 1.5,
                 ),
               ),
             ),
