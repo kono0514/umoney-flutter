@@ -1,112 +1,96 @@
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:nfc_manager/platform_tags.dart';
+import 'package:provider/provider.dart';
+import 'package:umoney_flutter/contentContainer.dart';
+import 'package:umoney_flutter/models/app.dart';
+import 'package:umoney_flutter/models/card.dart';
+import 'package:umoney_flutter/models/transaction.dart';
 import 'package:umoney_flutter/tlv/tlv_util.dart';
+import 'package:umoney_flutter/util.dart';
 import 'package:umoney_flutter/widgets/busCard.dart';
 import 'package:flutter/services.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:convert/convert.dart';
-import 'package:intl/intl.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((_) {
-    runApp(MyApp());
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => CardModel()),
+          ChangeNotifierProvider(create: (context) => AppModel()),
+        ],
+        child: MyApp(),
+      ),
+    );
   });
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
-        // This makes the visual density adapt to the platform that you run
-        // the app on. For desktop platforms, the controls will be smaller and
-        // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: HomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
+class HomePage extends StatefulWidget {
+  HomePage({Key key, this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  final String _defaultBalance = "₮ ----";
-  final String _defaultCardNumber = "**** **** **** ****";
-
-  String _balance;
-  String _cardNumber;
-
-  void _resetCard() {
-    setState(() {
-      _balance = _defaultBalance;
-      _cardNumber = _defaultCardNumber;
-    });
-  }
-
-  void _changeCard(String balance, String cardNumber) {
-    setState(() {
-      _balance = balance;
-      _cardNumber = cardNumber;
-    });
-  }
+class _HomePageState extends State<HomePage> {
+  final _errorScaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
-
-    _balance = _defaultBalance;
-    _cardNumber = _defaultCardNumber;
-
-    NfcManager.instance.isAvailable().then((value) {
-      print('Availalble');
-      print(value);
-    });
 
     NfcManager.instance.startTagSession(
       pollingOptions: Set.from([
         TagPollingOption.iso14443,
       ]),
       onDiscovered: (NfcTag tag) async {
-        _resetCard();
+        var cardModel = Provider.of<CardModel>(context, listen: false);
+        var appModel = Provider.of<AppModel>(context, listen: false);
 
-        // Manipulating tag
+        appModel.showInstructions = false;
+        cardModel.reset();
+
         IsoDep isoDep = IsoDep.fromTag(tag);
 
+        if (isoDep == null) {
+          // Cardiin format tohirsongui
+          print('Wrong card');
+          _errorScaffoldKey.currentState.showSnackBar(
+            SnackBar(
+              content: Text('Картын формат тохирсонгүй...'),
+              duration: const Duration(seconds: 5),
+            ),
+          );
+          appModel.showInstructions = true;
+          return;
+        }
+
+        // TMoney, UMoney specific AID
         var aid = 'd4100000030001';
         var aidBytes = hex.decode(aid);
+        // Prepare select command
         var selectFileCommand = Uint8List.fromList([
           0x00,
           0xa4,
@@ -116,16 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ...aidBytes,
           0x00,
         ]);
-
-        Uint8List fci = await isoDep.transceive(selectFileCommand);
-        var purseInfo = TlvUtil().findBERTLVString(fci, 'b0', false);
-        var cardNumber = "";
-
-        if (purseInfo != null) {
-          cardNumber = TlvUtil().getHexString(purseInfo, 4, 8);
-          cardNumber = cardNumber.replaceAllMapped(RegExp(r".{4}"), (match) => "${match.group(0)} ");
-        }
-
+        // Prepare get balance command
         var balanceCommand = Uint8List.fromList([
           0x90,
           0x4c,
@@ -133,27 +108,129 @@ class _MyHomePageState extends State<MyHomePage> {
           0x00,
           0x04,
         ]);
-        Uint8List balanceRecv = await isoDep.transceive(balanceCommand);
-        // balanceRecv[balanceRecv.length - 2] = "status"
-        // 0x90 = "STATUS_OK"
-        var balanceReal = balanceRecv.take(balanceRecv.length - 2).toList();
-        var balance = int.parse(hex.encode(balanceReal), radix: 16);
-        var balanceFormatted = NumberFormat.simpleCurrency(locale: 'mn', decimalDigits: 1).format(balance);
 
-        _changeCard(balanceFormatted, cardNumber);
+        Uint8List fci, balanceRecv;
+        try {
+          // Selecting AID returns FCI (6f) with purseInfo on 'b0' tag
+          fci = await isoDep.transceive(selectFileCommand);
+          balanceRecv = await isoDep.transceive(balanceCommand);
+        } catch (ex) {
+          print('Card moved too fast');
+          print(ex);
+          _errorScaffoldKey.currentState.showSnackBar(
+            SnackBar(
+              content: Text(
+                  'Карт уншигдсангүй... Уншуулахдаа бага зэрэг удаан бариарай'),
+              duration: const Duration(seconds: 5),
+            ),
+          );
+          appModel.showInstructions = true;
+          // Card moved too fast?
+          return;
+        }
+        // TODO: verify its umoney card from the FCI first.
+
+        var balance = Util.getIntegerFromByteArray(
+            balanceRecv, 0, balanceRecv.length - 2);
+
+        // Extract the card number from the Purse info.
+        Uint8List purseInfo = TlvUtil().findBERTLVString(fci, 'b0', false);
+        var cardNumber = purseInfo == null
+            ? ""
+            : Util.getHexStringFromByteArray(purseInfo, 4, 12);
+
+        // Get last 20 transactions (stored in order from newest (0 index) -> oldest)
+        List<Transaction> transactionRecords = [];
+        for (var i = 1; i <= 20; i++) {
+          var transactionRecordCommand = Uint8List.fromList([
+            0x00,
+            0xB2,
+            i,
+            0x24,
+            0x2e,
+          ]);
+
+          Uint8List response;
+          try {
+            response = await isoDep.transceive(transactionRecordCommand);
+          } catch (e) {
+            _errorScaffoldKey.currentState.showSnackBar(
+              SnackBar(
+                content: Text(
+                    'Карт гүйлгээнүүд дутуу уншигдсан байна... Дахин уншуулна уу'),
+                duration: const Duration(seconds: 5),
+                elevation: 10,
+              ),
+            );
+            break;
+          }
+
+          if (response.length - 2 != 0x2e) {
+            // No record on this index
+            continue;
+          }
+
+          Transaction transaction = Transaction.fromByteArray(response);
+          transactionRecords.add(transaction);
+
+          // Provider.of<CardModel>(context, listen: false)
+          //     .addTransaction(transaction);
+
+          // var moreInfoCommand = Uint8List.fromList([
+          //   0x00,
+          //   0xB2,
+          //   i,
+          //   0x1C,
+          //   0x34,
+          // ]);
+          // var moreResponse = await isoDep.transceive(moreInfoCommand);
+          // var moreResponseHex = hex.encode(moreResponse);
+          // print(["inOut", moreResponseHex.substring(10, 12)]);
+          // print(["stationId", moreResponseHex.substring(12, 12)]);
+          // print(
+          //     ["routeId", hex.encode(moreResponse.getRange(48, 56).toList())]);
+          // print([
+          //   "passengers",
+          //   hex.encode(moreResponse.getRange(58, 60).toList())
+          // ]);
+          // print([
+          //   "vehicleId",
+          //   hex.encode(moreResponse.getRange(68, 72).toList())
+          // ]);
+          // print([
+          //   "routeKey",
+          //   int.parse(hex.encode(moreResponse.getRange(48, 56).toList()),
+          //       radix: 16)
+          // ]);
+          // print([
+          //   "station",
+          //   int.parse(hex.encode(moreResponse.getRange(12, 19).toList()),
+          //       radix: 16)
+          // ]);
+        }
+
+        transactionRecords =
+            Util.assignUnknownTransactiontypes(transactionRecords);
+
+        cardModel.cardNumber = cardNumber;
+        cardModel.balance = balance;
+        if (transactionRecords.length > 0) {
+          cardModel.addTransactions(transactionRecords.toList());
+        }
       },
     );
   }
 
   @override
+  void dispose() {
+    NfcManager.instance.stopSession();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
+      key: _errorScaffoldKey,
       body: Stack(
         children: <Widget>[
           ClipPath(
@@ -179,14 +256,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 SizedBox(height: 30),
                 Center(
                   child: BusCard(
-                    width: MediaQuery.of(context).size.width - 60,
-                    balance: _balance,
-                    cardNumber: _cardNumber,
+                    width: MediaQuery.of(context).size.width - 40,
                   ),
                 ),
-                SizedBox(height: 80),
-                Text(
-                  'You have pushed the button this many times:',
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: ContentContainer(),
+                  ),
                 ),
               ],
             ),

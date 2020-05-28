@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:umoney_flutter/models/card.dart';
 
 class BusCard extends StatelessWidget {
-  const BusCard({Key key, this.width, this.balance, this.cardNumber}) : super(key: key);
+  const BusCard({Key key, this.width}) : super(key: key);
 
   final double width;
-  final String balance;
-  final String cardNumber;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: width,
-      height: (width * 0.628).roundToDouble(),
+      height: (width * 0.56).roundToDouble(),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: <Color>[
@@ -45,31 +45,37 @@ class BusCard extends StatelessWidget {
               ),
             ),
           ),
-          Positioned(
-            left: 20,
-            top: 50,
-            child: Text(
-              '$balance',
-              style: GoogleFonts.montserrat(
-                textStyle: TextStyle(
-                  color: Colors.white,
-                  fontSize: 36,
-                  fontWeight: FontWeight.w700,
+          Selector<CardModel, String>(
+            selector: (_, model) => model.balanceFormatted,
+            builder: (context, value, child) => Positioned(
+              left: 20,
+              top: 50,
+              child: Text(
+                value,
+                style: GoogleFonts.montserrat(
+                  textStyle: TextStyle(
+                    color: Colors.white,
+                    fontSize: 36,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),
           ),
-          Positioned(
-            left: 20,
-            bottom: 20,
-            child: Text(
-              '$cardNumber',
-              style: GoogleFonts.montserrat(
-                textStyle: TextStyle(
-                  color: const Color(0xffF4F4F4), 
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 1.5,
+          Selector<CardModel, String>(
+            selector: (_, model) => model.cardNumber,
+            builder: (context, value, child) => Positioned(
+              left: 20,
+              bottom: 20,
+              child: Text(
+                value,
+                style: GoogleFonts.montserrat(
+                  textStyle: TextStyle(
+                    color: const Color(0xffF4F4F4),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 1.5,
+                  ),
                 ),
               ),
             ),
