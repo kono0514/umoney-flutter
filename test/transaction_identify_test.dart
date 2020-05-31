@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 import 'package:umoney_flutter/models/transaction.dart';
-import 'package:umoney_flutter/util.dart';
+import 'package:umoney_flutter/utils/util.dart';
 
 void main() {
   test('Unknown transaction types are assigned correctly', () {

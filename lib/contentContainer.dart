@@ -4,14 +4,11 @@ import 'package:provider/provider.dart';
 import 'package:umoney_flutter/models/app.dart';
 import 'package:umoney_flutter/models/card.dart';
 import 'package:umoney_flutter/models/transaction.dart';
+import 'package:umoney_flutter/widgets/slideFadeIn.dart';
 import 'package:umoney_flutter/widgets/transactionListItem.dart';
 import 'package:umoney_flutter/widgets/welcomeNfcInstruction.dart';
 
 class ContentContainer extends StatelessWidget {
-  const ContentContainer({
-    Key key,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Consumer<AppModel>(
@@ -49,16 +46,19 @@ class ContentContainer extends StatelessWidget {
                   ),
                   SizedBox(height: 14),
                   Expanded(
-                    child: ListView.separated(
-                      separatorBuilder: (_, __) => Divider(
-                        height: 1,
-                        indent: 20,
-                        endIndent: 20,
-                        color: const Color(0xffE9E9E9),
-                      ),
-                      itemCount: transactions.length,
-                      itemBuilder: (context, index) => TransactionListItem(
-                        transaction: transactions[index],
+                    child: SlideFadeIn(
+                      duration: const Duration(seconds: 1),
+                      child: ListView.separated(
+                        separatorBuilder: (_, __) => Divider(
+                          height: 1,
+                          indent: 20,
+                          endIndent: 20,
+                          color: const Color(0xffE9E9E9),
+                        ),
+                        itemCount: transactions.length,
+                        itemBuilder: (context, index) => TransactionListItem(
+                          transaction: transactions[index],
+                        ),
                       ),
                     ),
                   ),

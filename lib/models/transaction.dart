@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:intl/intl.dart';
-import 'package:umoney_flutter/util.dart';
+import 'package:umoney_flutter/utils/util.dart';
 
 enum TransactionType {
   UNKNOWN,
