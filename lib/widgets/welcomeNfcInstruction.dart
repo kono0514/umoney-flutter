@@ -31,7 +31,6 @@ class WelcomeNfcInstruction extends StatelessWidget {
                   "Картаа уншуулна уу",
                   style: GoogleFonts.nunito(
                     textStyle: TextStyle(
-                      color: const Color(0xff050505),
                       fontSize: 24,
                       fontWeight: FontWeight.w400,
                     ),
