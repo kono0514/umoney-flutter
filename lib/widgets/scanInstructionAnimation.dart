@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class ScanInstruction extends StatefulWidget {
+class ScanInstructionAnimation extends StatefulWidget {
   @override
-  _ScanInstructionState createState() => _ScanInstructionState();
+  _ScanInstructionAnimationState createState() => _ScanInstructionAnimationState();
 }
 
-class _ScanInstructionState extends State<ScanInstruction>
+class _ScanInstructionAnimationState extends State<ScanInstructionAnimation>
     with TickerProviderStateMixin {
   AnimationController _controller;
 

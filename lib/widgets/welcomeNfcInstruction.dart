@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:platform/platform.dart';
 import 'package:android_intent/android_intent.dart';
 import 'package:umoney_flutter/services/NfcAvailabilityService.dart';
-import 'package:umoney_flutter/widgets/scanInstruction.dart';
+import 'package:umoney_flutter/widgets/scanInstructionAnimation.dart';
 
 class WelcomeNfcInstruction extends StatelessWidget {
   void _openNfcSettings() {
@@ -37,7 +37,7 @@ class WelcomeNfcInstruction extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 46),
-                ScanInstruction(),
+                ScanInstructionAnimation(),
               ],
             );
           } else {
