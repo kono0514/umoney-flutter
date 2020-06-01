@@ -9,6 +9,7 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
+import kotlin.concurrent.thread
 
 class ScanActivity: FlutterActivity() {
     private val CHANNEL: String = "app.channel.shared.tag"
@@ -29,10 +30,12 @@ class ScanActivity: FlutterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         intent.putExtra("background_mode", "transparent")
         intent.putExtra("route", "/intentScanner")
-        super.onCreate(savedInstanceState)
         if (NfcAdapter.ACTION_TECH_DISCOVERED == intent.action) {
-            handleSendTag(intent)
+            thread {
+                handleSendTag(intent)
+            }
         }
+        super.onCreate(savedInstanceState)
     }
 
     override fun onPause() {
