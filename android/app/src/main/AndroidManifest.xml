@@ -11,7 +11,7 @@
         android:required="true" />
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="umoney_flutter"
+        android:label="Үлдэгдэл шалгагч (UMONEY)"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
