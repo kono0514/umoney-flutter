@@ -23,7 +23,9 @@ class BusCard extends StatelessWidget {
         borderRadius: BorderRadius.all(Radius.circular(12)),
         boxShadow: [
           BoxShadow(
-            color: const Color.fromARGB(0x80, 0x17, 0x5B, 0x94),
+            color: Theme.of(context).brightness == Brightness.light
+                ? const Color.fromARGB(128, 23, 91, 148)
+                : const Color.fromARGB(128, 32, 60, 115),
             blurRadius: 30,
             spreadRadius: 10,
           ),

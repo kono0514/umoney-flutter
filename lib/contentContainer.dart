@@ -37,7 +37,6 @@ class ContentContainer extends StatelessWidget {
                       "Гүйлгээний түүх",
                       style: GoogleFonts.nunito(
                         textStyle: TextStyle(
-                          color: const Color(0xff212131),
                           fontSize: 21,
                           fontWeight: FontWeight.w700,
                         ),
@@ -50,10 +49,9 @@ class ContentContainer extends StatelessWidget {
                       duration: const Duration(seconds: 1),
                       child: ListView.separated(
                         separatorBuilder: (_, __) => Divider(
-                          height: 1,
+                          height: 0,
                           indent: 20,
                           endIndent: 20,
-                          color: const Color(0xffE9E9E9),
                         ),
                         itemCount: transactions.length,
                         itemBuilder: (context, index) => TransactionListItem(

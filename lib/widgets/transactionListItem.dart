@@ -11,7 +11,7 @@ class TransactionListItem extends StatelessWidget {
 
   final Transaction transaction;
 
-  Widget getBalanceTextWidget() {
+  Widget getBalanceTextWidget(BuildContext context) {
     Color color;
     String text;
     if (transaction.type == TransactionType.ENTER_BUS_CHARGE) {
@@ -22,7 +22,7 @@ class TransactionListItem extends StatelessWidget {
       color = Color(0xff1CCA61);
     } else {
       text = transaction.amountFormatted;
-      color = Color(0xff5A5A5A);
+      color = Theme.of(context).textTheme.headline4.color;
     }
 
     return Text(
@@ -98,7 +98,7 @@ class TransactionListItem extends StatelessWidget {
         getTransactionTypeText().toUpperCase(),
         style: GoogleFonts.nunito(
           textStyle: TextStyle(
-            color: const Color(0xff202231),
+            color: Theme.of(context).textTheme.headline6.color,
             fontSize: 17,
             fontWeight: FontWeight.w600,
           ),
@@ -109,7 +109,7 @@ class TransactionListItem extends StatelessWidget {
             .format(transaction.timestamp),
         style: GoogleFonts.nunito(
           textStyle: TextStyle(
-            color: const Color(0xff979799),
+            color: Theme.of(context).textTheme.headline2.color,
             fontSize: 13,
             fontWeight: FontWeight.w300,
           ),
@@ -119,12 +119,12 @@ class TransactionListItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          getBalanceTextWidget(),
+          getBalanceTextWidget(context),
           Text(
             transaction.newBalanceFormatted,
             style: GoogleFonts.montserrat(
               textStyle: TextStyle(
-                color: const Color(0xff5A5A5A),
+                color: Theme.of(context).textTheme.headline3.color,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
               ),

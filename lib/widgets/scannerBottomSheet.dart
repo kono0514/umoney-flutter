@@ -14,7 +14,7 @@ class ScannerBottomSheet extends StatefulWidget {
 class ScannerBottomSheetState extends State<ScannerBottomSheet> {
   String _value = "";
   double _fontSize = 60;
-  Color _color = const Color(0xff444444);
+  Color _color;
 
   void setBalance(String balance) {
     setState(() {
@@ -47,7 +47,6 @@ class ScannerBottomSheetState extends State<ScannerBottomSheet> {
               child: Text(
                 "Үлдэгдэл",
                 style: TextStyle(
-                  color: const Color(0xff404040),
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
                 ),
@@ -55,12 +54,12 @@ class ScannerBottomSheetState extends State<ScannerBottomSheet> {
             ),
             Container(
               margin: const EdgeInsets.only(top: 5),
-              height: 6,
-              width: 46,
+              height: 5,
+              width: 30,
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.transparent),
-                borderRadius: BorderRadius.circular(6),
-                color: const Color(0xffe0e0e0),
+                borderRadius: BorderRadius.circular(5),
+                color: Theme.of(context).disabledColor,
               ),
             )
           ],
