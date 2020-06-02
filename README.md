@@ -1,4 +1,4 @@
-# UMoney үлдэгдэл шалгагч (Flutter Android)
+# Umoney Transit Card Scanner (Flutter Android)
 
 UMoney автобусаар зорчих картын үлдэгдэл болон өмнө зорчсон түүхийг харуулна.  
 
@@ -6,22 +6,22 @@ UMoney автобусаар зорчих картын үлдэгдэл боло�
 
 Only for Android (API 19+) phones with NFC support.
 
-## Download
+### Download
 
 Play Store: TODO  
 APK: https://github.com/kono0514/umoney-flutter/releases/tag/v1.0
 
-## Screenshots
+### Screenshots
 
 TODO
 
-## Features
+### Features
 
 - Scan a card from anywhere in the system
 - Last 20 transaction history
 - Dark Mode (Follows system settings)
 
-## Used Resources
+### Used Resources
 
 Card protocol specs: <http://www.tta.or.kr/include/Download.jsp?filename=stnfile/TTAK.KO-12.0240_[2].pdf>  
 Useful additional informations in english: <https://github.com/metrodroid/metrodroid/wiki/South-Korea>  
