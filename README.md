@@ -1,16 +1,27 @@
-# umoney_flutter
+# UMoney үлдэгдэл шалгагч (Flutter Android)
 
-A new Flutter project.
+UMoney автобусаар зорчих картын үлдэгдэл болон өмнө зорчсон түүхийг харуулна.  
 
-## Issues to keep track of
+Үлдэгдэл шалгахад заавал аппликейшн нээлттэй байх шаардлагагүй бөгөөд хаанаас ч хамаагүй (Facebook, Youtube үзэж байхдаа г.м...) шалгах боломжтой.  
 
-IntentScanner crashes on Android 4.4 Kitkat  
+Only for Android (API 19+) phones with NFC support.
 
-Reproduce:
-1. From Android home screen, scan a card
-2. After scanned, press Home button or Recent Apps button
-3. App crashes
+## Download
 
-Relevant:  
-https://github.com/flutter/engine/pull/18338  
-https://github.com/flutter/engine/pull/18295  
+Play Store: TODO  
+APK: https://github.com/kono0514/umoney-flutter/releases/tag/v1.0
+
+## Screenshots
+
+TODO
+
+## Features
+
+- Scan a card from anywhere in the system
+- Last 20 transaction history
+- Dark Mode (Follows system settings)
+
+## Used Resources
+
+Card protocol specs: <http://www.tta.or.kr/include/Download.jsp?filename=stnfile/TTAK.KO-12.0240_[2].pdf>  
+Useful additional informations in english: <https://github.com/metrodroid/metrodroid/wiki/South-Korea>  
