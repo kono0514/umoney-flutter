@@ -34,6 +34,7 @@ class _IntentScannerState extends State<IntentScanner> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       showModalBottomSheet(
         context: context,
+        barrierColor: Colors.transparent,
         enableDrag: true,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(25)),

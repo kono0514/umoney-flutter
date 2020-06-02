@@ -38,11 +38,6 @@ class ScanActivity: FlutterActivity() {
         super.onCreate(savedInstanceState)
     }
 
-    override fun onPause() {
-        super.onPause()
-        overridePendingTransition(0, 0)
-    }
-
     private fun handleSendTag(intent: Intent) {
         val tag: Tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
 
