@@ -5,10 +5,15 @@ import 'package:umoney_flutter/models/app.dart';
 import 'package:umoney_flutter/models/card.dart';
 import 'package:flutter/services.dart';
 import 'package:umoney_flutter/screens/home.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 void main() {
+  Crashlytics.instance.enableInDevMode = true;
+  FlutterError.onError = Crashlytics.instance.recordFlutterError;
+
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+  SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(statusBarColor: Colors.transparent));
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((_) {
     runApp(
@@ -43,4 +48,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
