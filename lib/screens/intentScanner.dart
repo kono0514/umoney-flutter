@@ -15,8 +15,11 @@ class _IntentScannerState extends State<IntentScanner> {
 
   getSharedBalance() async {
     Map sharedBalance = await platform.invokeMethod("getSharedBalance");
-    if (sharedBalance == null || sharedBalance["state"] == "querying" || _sheetKey.currentState == null) {
-      return await Future.delayed(const Duration(milliseconds: 500), getSharedBalance);
+    if (sharedBalance == null ||
+        sharedBalance["state"] == "querying" ||
+        _sheetKey.currentState == null) {
+      return await Future.delayed(
+          const Duration(milliseconds: 500), getSharedBalance);
     }
 
     if (sharedBalance["state"] == "success") {
@@ -34,7 +37,7 @@ class _IntentScannerState extends State<IntentScanner> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       showModalBottomSheet(
         context: context,
-        barrierColor: Colors.transparent,
+        barrierColor: Colors.black.withAlpha(1),
         enableDrag: true,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
