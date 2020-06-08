@@ -8,8 +8,8 @@ Only for Android (API 19+) phones with NFC support.
 
 ### Download
 
-Play Store: TODO  
-APK: https://github.com/kono0514/umoney-flutter/releases/tag/v1.0
+Play Store: https://play.google.com/store/apps/details?id=com.kono.umoney_flutter  
+APK: https://github.com/kono0514/umoney-flutter/releases
 
 ### Screenshots
 
