@@ -81,8 +81,8 @@ class _HomeState extends State<Home> {
     }
     // TODO: verify its umoney card from the FCI first.
 
-    var balance = Util.getIntegerFromByteArray(
-        balanceRecv, 0, balanceRecv.length - 2);
+    var balance =
+        Util.getIntegerFromByteArray(balanceRecv, 0, balanceRecv.length - 2);
 
     // Extract the card number from the Purse info.
     Uint8List purseInfo = TlvUtil().findBERTLVString(fci, 'b0', false);
@@ -121,12 +121,23 @@ class _HomeState extends State<Home> {
         continue;
       }
 
-      Transaction transaction = Transaction.fromByteArray(response);
-      transactionRecords.add(transaction);
+      try {
+        Transaction transaction = Transaction.fromByteArray(response);
+        transactionRecords.add(transaction);
+      } catch (e) {
+        _errorScaffoldKey.currentState.showSnackBar(
+          SnackBar(
+            content: Text(
+                'Карт гүйлгээний мэдээлэл уншихад алдаа гарлаа. Хөгжүүлэгчид мэдэгдэнэ үү.'),
+            duration: const Duration(seconds: 5),
+            elevation: 10,
+          ),
+        );
+        break;
+      }
     }
 
-    transactionRecords =
-        Util.assignUnknownTransactiontypes(transactionRecords);
+    transactionRecords = Util.assignUnknownTransactiontypes(transactionRecords);
 
     cardModel.cardNumber = cardNumber;
     cardModel.balance = balance;

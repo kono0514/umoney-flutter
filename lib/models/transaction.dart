@@ -46,7 +46,7 @@ class Transaction {
     int amount = Util.getIntegerFromByteArray(bArr, 10, 14);
 
     var datetimeString = Util.getHexStringFromByteArray(bArr, 26, 33);
-    DateTime datetime = DateTime.parse(
+    DateTime datetime = DateTime.tryParse(
         datetimeString.substring(0, 8) + "T" + datetimeString.substring(8));
 
     var type;
@@ -79,6 +79,6 @@ class Transaction {
         'amount': amount,
         'terminalId': terminalId,
         'terminalTransactionNumber': terminalTransactionNumber,
-        'timestamp': timestamp.toIso8601String(),
+        'timestamp': timestamp?.toIso8601String() ?? 'ffffffffffffff',
       };
 }

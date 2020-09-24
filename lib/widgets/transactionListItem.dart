@@ -88,6 +88,13 @@ class TransactionListItem extends StatelessWidget {
     return 'UNKNOWN';
   }
 
+  String getTimestampText() {
+    if (transaction.timestamp != null) {
+      return DateFormat('HH:mm (y/M/d)').format(transaction.timestamp);
+    }
+    return 'XX:XX XXXX/XX/XX';
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListTile(
@@ -105,8 +112,7 @@ class TransactionListItem extends StatelessWidget {
         ),
       ),
       subtitle: Text(
-        new DateFormat('#${transaction.id} HH:mm (M САР d)')
-            .format(transaction.timestamp),
+        '#${transaction.id} ${getTimestampText()}',
         style: GoogleFonts.nunito(
           textStyle: TextStyle(
             color: Theme.of(context).textTheme.headline2.color,
